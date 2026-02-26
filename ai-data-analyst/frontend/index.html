@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>AI Data Analyst</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+
+<h1>AI Data Analyst</h1>
+
+<input type="file" id="file" />
+<button onclick="analyze()">Analyze</button>
+
+<pre id="report"></pre>
+<button onclick="exportReport()">⬇ Export Report</button>
+
+<canvas id="chart" height="120"></canvas>
+
+<pre id="monitor"></pre>
+
+<script>
+async function analyze() {
+  const file = document.getElementById("file").files[0];
+  const form = new FormData();
+  form.append("file", file);
+
+  const res = await fetch("/analyze", { method: "POST", body: form });
+  const data = await res.json();
+
+  document.getElementById("report").innerText = data.report;
+  document.getElementById("monitor").innerText = data.monitor_feedback;
+
+  drawChart(data.analytics);
+}
+
+function exportReport() {
+  const text = document.getElementById("report").innerText;
+  const blob = new Blob([text], { type: "text/plain" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "ai_report.txt";
+  a.click();
+}
+
+function drawChart(analytics) {
+  const labels = [];
+  const values = [];
+
+  for (const col in analytics) {
+    if (analytics[col].mean !== undefined) {
+      labels.push(col);
+      values.push(analytics[col].mean);
+    }
+  }
+
+  new Chart(document.getElementById("chart"), {
+    type: "bar",
+    data: {
+      labels,
+      datasets: [{
+        label: "Mean Values",
+        data: values
+      }]
+    }
+  });
+}
+</script>
+
+</body>
+</html>
