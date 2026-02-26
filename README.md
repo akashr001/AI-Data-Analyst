@@ -79,14 +79,13 @@ Frontend:
 project/
 │
 ├── backend/
-│   ├── main.py
+│   ├── api.py
 │   ├── engine.py
 │
 ├── frontend/
 │   ├── index.html
 │
 ├── requirements.txt
-└── README.md
 
 ---
 
